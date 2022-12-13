@@ -13,9 +13,10 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     print("Predicting Housing Prices using Naïve Bayes Classifier")
+    print()
     print("=======================")
-    print("PRE-PROCESSING")
-    print("=======================")
+    print()
+    print("PRE-PROCESSING...")
 
     # Load data from relevant files
     print("Loading training data...")
