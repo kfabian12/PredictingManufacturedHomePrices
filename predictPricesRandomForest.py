@@ -1,77 +1,124 @@
 # Predict Manufactured Home Prices
-# Random Forest
+# K-Nearest Neighbor
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix  
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+from matplotlib.colors import ListedColormap
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn import metrics
+from matplotlib.colors import ListedColormap
+import pdb
+
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def main():
-    print("Predicting Housing Prices using Naïve Bayes Classifier")
-    print("=======================")
-    print("PRE-PROCESSING")
-    print("=======================")
 
-    # Load data from relevant files
+    cmap_light = ListedColormap(['#FFAFAF', '#AFAFFF', '#F6D587'])
+    cmap_bold = ListedColormap(['red', 'blue', 'orange'])
+
+    # import data
     print("Loading training data...")
     training = np.loadtxt(os.path.join(ROOT, 'trainingdata.csv'), delimiter=',', dtype=int)
-    training_data = training[:, :-1]
-    training_labels = training[:, -1]
+    x_train = training[:, :-1]
+    y_train = training[:, -1]
     print("Loading testing data...")
     testing = np.loadtxt(os.path.join(ROOT, 'testingdata.csv'), delimiter=',', dtype=int)
-    testing_data = testing[:, :-1]
-    testing_labels = testing[:, -1]
+    x_test = testing[:, :-1]
+    y_test = testing[:, -1]
 
-    # Extract useful parameters
-    # Make a list of possible values for sqft
-    sqft_categories = np.unique(training_data[:, 2])
-    sqft_categories = np.unique(sqft_categories - (sqft_categories % 100))
-    sqft_categories = np.delete(sqft_categories, 22)
+    x_train[:, 2] = (x_train[:, 2] / 100) - 4
+    x_train[x_train[:, 2] > 21, 2] = 21
+    x_train[x_train[:, 2] < 0, 2] = 0
 
-    #convert values to indices
-    training_data[:, 2] = (training_data[:, 2] / 100) - 4
-    training_data[training_data[:, 2] > 21, 2] = 21
-    training_data[training_data[:, 2] < 0, 2] = 0
+    x_test[:, 2] = (x_test[:, 2] / 100) - 4
+    x_test[x_test[:, 2] > 21, 2] = 21
+    x_test[x_test[:, 2] < 0, 2] = 0
 
-    testing_data[:, 2] = (testing_data[:, 2] / 100) - 4
-    testing_data[testing_data[:, 2] > 21, 2] = 21
-    testing_data[testing_data[:, 2] < 0, 2] = 0
-
-    #Make a list of possible values for price
-    possible_prices = np.unique(training_labels)
+    # make a list of all possible values for price
+    possible_prices = np.unique(y_train)
     possible_prices = np.unique(possible_prices - (possible_prices % 25000))
-    
-    #convert values to indices
-    training_labels = np.floor(training_labels / 25000).astype(int)
-    testing_labels = np.floor(testing_labels / 25000).astype(int)
 
-    # create classifier object  
-    classifier= RandomForestClassifier(n_estimators= 10, criterion="entropy")  
-    classifier.fit(training_data, training_labels)
-    
-    # predict the test result
-    y_pred= classifier.predict(testing_data)  
-    
-    # create confusion matrix to determine correct predictions
-    cm = confusion_matrix(testing_labels, y_pred)
+    # convert values to indices
+    y_train = np.floor(y_train / 25000).astype(int)
+    y_test = np.floor(y_test / 25000).astype(int)
+
+    # train k-NN
+    knn = KNeighborsClassifier(n_neighbors=8)
+    knn.fit(x_train, y_train)
+
+    # Predict on the test data
+    pred = knn.predict(x_test)
+    pred = pred.astype(int)
+
+    # Calculate the accuracy of the model using test data
+    print("Calculating accuracy...")
+    print(knn.score(x_test, y_test))
+
+    # show results
+    cm = confusion_matrix(y_test, pred)
     print(cm)
-    
-    print("Accuracy: {:.2f}".format(classifier.score(testing_data, testing_labels)))
-    
-    X_grid = np.arange(min(testing_data[:, 2]), max(testing_data[:, 2]), 0.01)                   
-    X_grid = X_grid.reshape((len(X_grid), 1))
-    plt.scatter(testing_data[:, 2], testing_labels, color = 'blue')  
-    plt.plot(X_grid, y_pred, color = 'green') 
-    plt.title('Predict Manufactured Housing Prices')
-    plt.xlabel('Square Footage')
+    plt.figure(1)
+    plt.scatter(x_test[:, 0], pred, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predicted Manufactured Housing Prices")
+    plt.xlabel('Region')
     plt.ylabel('Price')
+
+    plt.figure(2)
+    plt.scatter(x_test[:, 0], y_test, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predicted Manufactured Housing Prices")
+    plt.xlabel('Region')
+    plt.ylabel('Price')
+
     plt.show()
-    
+
+    plt.figure(3)
+    plt.scatter(x_test[:, 1], pred, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('Year')
+    plt.ylabel('Price')
+
+    plt.figure(4)
+    plt.scatter(x_test[:, 1], y_test, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('Year')
+    plt.ylabel('Price')
+
+    plt.show()
+
+    plt.figure(5)
+    plt.scatter(x_test[:, 2], pred, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('SQFT')
+    plt.ylabel('Price')
+
+    plt.figure(6)
+    plt.scatter(x_test[:, 2], y_test, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('SQFT')
+    plt.ylabel('Price')
+
+    plt.show()
+
+    plt.figure(7)
+    plt.scatter(x_test[:, 3], pred, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('Bedrooms')
+    plt.ylabel('Price')
+
+    plt.figure(8)
+    plt.scatter(x_test[:, 3], y_test, cmap=cmap_bold, edgecolor='k', s=100)
+    plt.title("Predict Manufactured Housing Prices")
+    plt.xlabel('Bedrooms')
+    plt.ylabel('Price')
+
+    plt.show()
+        
+    pdb.set_trace()
+
+
 
 if __name__ == "__main__":
     main()
-
-
