@@ -51,11 +51,14 @@ def main():
     testing_labels = np.floor(testing_labels / 25000).astype(int)
 
     # create classifier object  
-    classifier= RandomForestClassifier(n_estimators= 10, criterion="entropy")  
+    classifier= RandomForestClassifier(n_estimators= 15, criterion="entropy")  
     classifier.fit(training_data, training_labels)
     
     # predict the test result
-    y_pred= classifier.predict(testing_data)  
+    y_pred= classifier.predict(testing_data) 
+
+    print("Calculating accuracy...")
+    print(classifier.score(testing_data, testing_labels)) 
     
     # create confusion matrix to determine correct predictions
     cm = confusion_matrix(testing_labels, y_pred)
