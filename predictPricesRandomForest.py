@@ -60,16 +60,16 @@ def main():
     cm = confusion_matrix(testing_labels, y_pred)
     print(cm)
     
-    pdb.set_trace()
+    print("Accuracy: {:.2f}".format(classifier.score(testing_data, testing_labels)))
     
-    # X_grid = np.arrange(min(x_train), max(x_train), 0.01)                   
-    # X_grid = X_grid.reshape((len(X_grid), 1))
-    # plt.scatter(x_train, y_train, color = 'blue')  
-    # plt.plot(X_grid, y_pred, color = 'green') 
-    # plt.title('Predict Manufactured Housing Prices')
-    # plt.xlabel('Square Footage')
-    # plt.ylabel('Price')
-    # plt.show()
+    X_grid = np.arange(min(testing_data[:, 2]), max(testing_data[:, 2]), 0.01)                   
+    X_grid = X_grid.reshape((len(X_grid), 1))
+    plt.scatter(testing_data[:, 2], testing_labels, color = 'blue')  
+    plt.plot(X_grid, y_pred, color = 'green') 
+    plt.title('Predict Manufactured Housing Prices')
+    plt.xlabel('Square Footage')
+    plt.ylabel('Price')
+    plt.show()
     
 
 if __name__ == "__main__":

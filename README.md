@@ -1,8 +1,14 @@
-# PredictingManufacturedHomePrices
+# Predicting Manufactured Home Prices
 
-INTRODUCTION
-The goal of our project is to predict manufactured housing prices. The data is from the US Census and their manufactured home 
-surveys from 2008 to 2021. The performance metrics that we used are K-Nearest Neighbor, Naive Bayes, and Random Forest.
+##INTRODUCTION
+The goal of our project is to predict manufactured housing prices using data from the US Census. The data includes:
+1.Region
+   This is separated into 4 sections: NorthEast, Northwest, Midwest, South, West each represented by a number 1 - 4
+2.Shipmonth
+    Written as YYYYMM
+3. Square Footage
+4. Number of Bedrooms
+    This is separated into two categories: 1, if the number of bedrooms is 2 or less, and 2, if the number of bedrooms is 3 or more
 
 
 K NEAREST NEIGHBOR
