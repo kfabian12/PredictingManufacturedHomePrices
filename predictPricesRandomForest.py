@@ -6,7 +6,6 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import pdb
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 

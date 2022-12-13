@@ -1,12 +1,9 @@
 #NaiveBayes.py
 """Predicting housing prices using Naive Bayes model."""
 
-import argparse
 import os
-import pdb
 import numpy as np
 from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
