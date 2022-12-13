@@ -7,7 +7,7 @@ import pdb
 import numpy as np
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
-import math
+from sklearn.naive_bayes import GaussianNB
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,9 +31,6 @@ def main():
     # Convert values in data to indices for regions
     training_data[:, 0] = training_data[:, 0] - 1
     testing_data[:, 0] = testing_data[:, 0] - 1
-
-    # Make a list of possible values for shipdates
-    shipdates = np.unique(training_data[:, 1])
 
     # Convert values in data to indices for shipdates
     training_data[:, 1] = ((training_data[:, 1] % 100) + 12 * np.floor(((training_data[:, 1] - 201401) / 100)) - 1).astype(int)
@@ -70,83 +67,25 @@ def main():
     testing_labels = np.floor(testing_labels / 25000).astype(int)
 
     # A couple more variables
-    num_train = len(training_labels)
     num_test = len(testing_labels)
-    num_sqft = len(sqft_categories)
-    num_prices = len(possible_prices)
-    num_bedrooms = len(np.unique(training_data[:, 3]))
-    num_regions = len(np.unique(training_data[:, 0]))
-    num_shipdates = len(np.unique(training_data[:, 1]))
-    num_parameters = num_regions + num_shipdates + num_sqft + num_bedrooms
 
 
+    print("TRAINING...")
 
-    print("\n=======================")
-    print("TRAINING")
-    print("=======================")
+    clf = GaussianNB()
+    clf.fit(training_data, training_labels)
 
-    # Estimate the prior probabilities
-    print("Estimating prior probabilities...")
-    priors = np.bincount(training_labels) / num_train
+    print("TESTING...")
 
-    # Estimate the class conditional probabilities
-    print("Estimating class conditional probabilities...")
-    class_conditionals = np.zeros((num_parameters, num_prices))
+    pred = clf.predict(testing_data)
 
-    for i in range(num_prices):
-        x = np.bincount(training_data[np.where(training_labels == i), 0].flatten()) 
-        class_conditionals[:len(x), i] = x
-        
-        x = np.bincount(training_data[np.where(training_labels == i), 1].flatten()) 
-        class_conditionals[num_regions:num_regions + len(x), i] = x
+    print("PERFORMANCE: ")
 
-        x = np.bincount(training_data[np.where(training_labels == i), 2].flatten()) 
-        class_conditionals[num_regions + num_shipdates:num_regions + num_shipdates + len(x), i] = x
-
-        x = np.bincount(training_data[np.where(training_labels == i), 3].flatten()) 
-        class_conditionals[num_parameters - num_bedrooms:num_parameters - num_bedrooms + len(x), i] = x
-
-    alpha = 1/num_train
-    class_conditionals += alpha
-    class_conditionals /= np.sum(class_conditionals, 0)
-    
-    pdb.set_trace()
-
-
-
-    print("\n=======================")
-    print("TESTING")
-    print("=======================")
-
-    # Test the Naive Bayes classifier
-    print("Applying natural log to prevent underflow...")
-    log_priors = np.log(priors)
-    log_class_conditionals = np.log(class_conditionals)
-
-    print("Computing parameters in data...")
-    counts = np.zeros((num_test, num_parameters))
-
-    for i in range(num_prices):
-        pass
-
-    print("Computing posterior probabilities...")
-    pdb.set_trace
-    log_posterior = np.matmul(counts, log_class_conditionals)
-    log_posterior += log_priors
-
-    print("Assigning predictions via argmax...")
-    pred = np.argmax(log_posterior, 1)
-
-    print("\n=======================")
-    print("PERFORMANCE METRICS")
-    print("=======================")
-
-    # Compute performance metrics
-    accuracy = np.mean(testing_labels == pred)
-    print("Accuracy: {0:d}/{1:d} ({2:0.1f}%)".format(sum(testing_labels == pred), num_test, accuracy * 100))
+    print("Accuracy: {:.2f}".format(np.sum(pred == testing_labels) / num_test))
+    print("Confusion Matrix: ")
     cm = confusion_matrix(testing_labels, pred)
-    print("Confusion matrix:")
     print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in cm]))
+
 
 
 if __name__ == "__main__":
