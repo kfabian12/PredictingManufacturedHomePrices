@@ -1,7 +1,7 @@
 # Predict Manufactured Home Prices
 # Random Forest
 
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix  
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,21 +47,17 @@ def main():
     
     #convert values to indices
     training_labels = np.floor(training_labels / 25000).astype(int)
-
     testing_labels = np.floor(testing_labels / 25000).astype(int)
 
-    
     # create classifier object  
-    classifier= RandomForestRegressor(n_estimators= 10, criterion="entropy")  
-    classifier.fit(x_train, y_train)  
-    
-    
+    classifier= RandomForestClassifier(n_estimators= 10, criterion="entropy")  
+    classifier.fit(training_data, training_labels)
     
     # predict the test result
-    y_pred= classifier.predict(x_test)  
+    y_pred= classifier.predict(testing_data)  
     
     # create confusion matrix to determine correct predictions
-    cm = confusion_matrix(y_test, y_pred)
+    cm = confusion_matrix(testing_labels, y_pred)
     print(cm)
     
     pdb.set_trace()
@@ -78,4 +74,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

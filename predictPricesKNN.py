@@ -5,7 +5,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn import metrics
 from matplotlib.colors import ListedColormap
@@ -46,13 +46,12 @@ def main():
     y_test = np.floor(y_test / 25000).astype(int)
     
     # train k-NN
-    knn = KNeighborsRegressor(n_neighbors=8)
+    knn = KNeighborsClassifier(n_neighbors=8)
     knn.fit(x_train, y_train)
   
     # Predict on the test data
     pred = knn.predict(x_test)
     pred = pred.astype(int)
-    print(pred)
     
     # Calculate the accuracy of the model using test data
     print("Calculating accuracy...")
@@ -62,8 +61,8 @@ def main():
     cm = confusion_matrix(y_test, pred)
     print(cm)
     
-    xm, ym = np.meshgrid(np.arange(-0.1, 1.1, 0.002), np.arange(-0.1, 1.1, 0.002))
-    plt.pcolormesh(xm, ym, pred, shading='auto')
+    # xm, ym = np.meshgrid(np.arange(-0.1, 1.1, 0.002), np.arange(-0.1, 1.1, 0.002))
+    # plt.pcolormesh(xm, ym, pred, shading='auto')
     plt.scatter(x_test[:,0], x_test[:,1], c=y_test, cmap=cmap_bold, edgecolor='k', s=100)
     plt.title("Predict Manufactured Housing Prices")
     plt.xlabel('Year')
